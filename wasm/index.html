@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>WASM Image Resizer</title>
+  </head>
+  <body>
+    <script type="module">
+      import init, { add } from "./pkg/wasm_image_resize.js";
+
+      // Bootstrap WASM Module
+      await init();
+
+      // Use our WASM Module
+      console.log(add(5 + 3));
+    </script>
+    <h1>A Calculator!</h1>
+    <p>Check your console for the secret number</p>
+  </body>
+</html>
