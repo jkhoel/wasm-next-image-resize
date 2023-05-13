@@ -1,6 +1,5 @@
 import Add from "@/components/Add";
-import Greeting from "@/components/Greeting";
-import GreeterWithNoContext from "@/components/GreeterWithNoContext";
+import UploadDialog from "@/components/upload-dialog";
 import { WASMContextProvider } from "@/contexts/wasm-context";
 
 export default function Home() {
@@ -8,14 +7,9 @@ export default function Home() {
     <main className="flex min-h-screen flex-col p-24">
       <h1>Welcome!</h1>
       <WASMContextProvider>
-        <p>
-          <Greeting name="NextJS and WebAssembly" />
-        </p>
         <Add />
+        <UploadDialog />
       </WASMContextProvider>
-      <div className="my-4">
-        <GreeterWithNoContext />
-      </div>
     </main>
   );
 }

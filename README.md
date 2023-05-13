@@ -1,4 +1,4 @@
-# WASM Module for quickly resizing images
+# Demo of a NextJS project with a WASM Module for quickly resizing images clientside
 
 Shows uploading and resizing an image client-side, but could just as well be ran on a node backend by changing build flags.
 The resizing WASM library is built in rust and can be imported by any process that can run JavaScript.
