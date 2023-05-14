@@ -35,7 +35,16 @@ export default function UploadDialog() {
   useEffect(() => {
     if (rawImageData) {
       const buffer = new Uint8Array(rawImageData);
-      setProcessedResult(ctx.wasm?.process_image(buffer));
+
+      const resArr = ctx.wasm?.resize_image(800, 500, buffer);
+
+      if (resArr) {
+        var blob = new Blob([resArr], { type: "image/png" });
+        var url = URL.createObjectURL(blob);
+
+        console.log(url);
+        setProcessedResult(url);
+      }
     }
   }, [rawImageData]);
 
@@ -67,7 +76,15 @@ export default function UploadDialog() {
         />
       </div>
 
-      <div>{processedResult}</div>
+      {processedResult && (
+        // Show the Raw image if we have one
+        <div className="my-6 p-6 border-2 border-white w-full rounded-lg">
+          <p className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+            Resized Image:
+          </p>
+          <img src={processedResult} alt="Resized image" width={600} />
+        </div>
+      )}
 
       {rawImageUrl && (
         // Show the Raw image if we have one
