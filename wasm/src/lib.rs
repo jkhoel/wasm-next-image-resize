@@ -10,6 +10,12 @@ pub fn greet(name: &str) -> String {
     format!("Hello, {}!", name)
 }
 
+#[wasm_bindgen]
+pub fn process_image(buffer: &[u8]) -> String {
+    println!("Length: {}", buffer.len());
+    format!("Length: {}", buffer.len())
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

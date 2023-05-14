@@ -3,17 +3,41 @@ import { WASMContext } from "@/contexts/wasm-context";
 import Image from "next/image";
 import { ChangeEventHandler, useContext, useEffect, useState } from "react";
 
+const getImageData = async (image: File) => {
+  return await image
+    .arrayBuffer()
+    .then((buffer) => buffer)
+    .catch((err) => console.log(err));
+};
+
 export default function UploadDialog() {
   const [rawImage, setRawImage] = useState<File>();
   const [rawImageUrl, setRawImageUrl] = useState<string>();
+  const [rawImageData, setRawImageData] = useState<ArrayBuffer>();
+
+  const [processedResult, setProcessedResult] = useState<string>();
 
   const ctx = useContext(WASMContext);
 
   useEffect(() => {
     if (rawImage) {
+      (async () => {
+        await rawImage
+          .arrayBuffer()
+          .then((buffer) => setRawImageData(buffer))
+          .catch((err) => console.log(err));
+      })();
+
       setRawImageUrl(URL.createObjectURL(rawImage));
     }
   }, [rawImage]);
+
+  useEffect(() => {
+    if (rawImageData) {
+      const buffer = new Uint8Array(rawImageData);
+      setProcessedResult(ctx.wasm?.process_image(buffer));
+    }
+  }, [rawImageData]);
 
   const handleFileSelect = (el: HTMLInputElement) => {
     if (el.files && el.files[0]) {
@@ -42,6 +66,8 @@ export default function UploadDialog() {
           onChange={(e) => handleFileSelect(e.target)}
         />
       </div>
+
+      <div>{processedResult}</div>
 
       {rawImageUrl && (
         // Show the Raw image if we have one
