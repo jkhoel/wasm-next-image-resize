@@ -1,7 +1,8 @@
 "use client";
-import { WASMContext } from "@/contexts/wasm-context";
-import Image from "next/image";
-import { ChangeEventHandler, useContext, useEffect, useState } from "react";
+import { WASMContext } from "@contexts/wasm-context";
+import { byteValueNumberFormatter } from "@utils/formatter";
+import NextImage from "next/image";
+import { useContext, useEffect, useState } from "react";
 
 const getImageData = async (image: File) => {
   return await image
@@ -10,47 +11,72 @@ const getImageData = async (image: File) => {
     .catch((err) => console.log(err));
 };
 
-export default function UploadDialog() {
-  const [rawImage, setRawImage] = useState<File>();
-  const [rawImageUrl, setRawImageUrl] = useState<string>();
-  const [rawImageData, setRawImageData] = useState<ArrayBuffer>();
+type RawImageData = {
+  buffer: ArrayBuffer;
+  width: number;
+  height: number;
+  url: string;
+};
 
-  const [processedResult, setProcessedResult] = useState<string>();
+export default function UploadDialog() {
+  const [inputImageFile, setInputImageFile] = useState<File>();
+  const [inputImageData, setInputImageData] = useState<RawImageData>();
+
+  const [outputImageUrl, setOutputImageUrl] = useState<string>();
 
   const ctx = useContext(WASMContext);
 
+  // Generate buffers and data when a new picture file is selected
   useEffect(() => {
-    if (rawImage) {
+    if (inputImageFile) {
       (async () => {
-        await rawImage
+        await inputImageFile
           .arrayBuffer()
-          .then((buffer) => setRawImageData(buffer))
+          .then((buffer) => {
+            // Create an Image object that we can use to get data about the input image
+            var inputImg = new Image();
+            var url = URL.createObjectURL(inputImageFile);
+
+            // We need to detect the size onLoad():
+            inputImg.onload = () =>
+              setInputImageData({
+                buffer: buffer,
+                width: inputImg.width,
+                height: inputImg.height,
+                url,
+              });
+
+            // Then set the source to trigger it
+            inputImg.src = url;
+          })
           .catch((err) => console.log(err));
       })();
-
-      setRawImageUrl(URL.createObjectURL(rawImage));
     }
-  }, [rawImage]);
+  }, [inputImageFile]);
 
+  // Generate Resized images with the WASM Module if the input data changes
   useEffect(() => {
-    if (rawImageData) {
-      const buffer = new Uint8Array(rawImageData);
+    if (inputImageData) {
+      // Make our input-image into an array if u8's that we can pass to Rust
+      const buffer = new Uint8Array(inputImageData.buffer);
 
+      // Call our resizing function from the WASM module!
       const resArr = ctx.wasm?.resize_image(800, 500, buffer);
 
+      // Set the output URL if we got a resulting image back
       if (resArr) {
         var blob = new Blob([resArr], { type: "image/png" });
         var url = URL.createObjectURL(blob);
 
         console.log(url);
-        setProcessedResult(url);
+        setOutputImageUrl(url);
       }
     }
-  }, [rawImageData]);
+  }, [inputImageData]);
 
   const handleFileSelect = (el: HTMLInputElement) => {
     if (el.files && el.files[0]) {
-      setRawImage(el.files[0]);
+      setInputImageFile(el.files[0]);
     }
   };
 
@@ -76,23 +102,32 @@ export default function UploadDialog() {
         />
       </div>
 
-      {processedResult && (
+      {outputImageUrl && (
         // Show the Raw image if we have one
         <div className="my-6 p-6 border-2 border-white w-full rounded-lg">
           <p className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
             Resized Image:
           </p>
-          <img src={processedResult} alt="Resized image" width={600} />
+          <img src={outputImageUrl} alt="Resized image" width={600} />
         </div>
       )}
 
-      {rawImageUrl && (
+      {inputImageData && (
         // Show the Raw image if we have one
         <div className="my-6 p-6 border-2 border-white w-full rounded-lg">
           <p className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-            Original Image:
+            {`Original Image (${inputImageData?.width} x ${
+              inputImageData?.height
+            } ${byteValueNumberFormatter.format(
+              inputImageData?.buffer.byteLength
+            )})`}
           </p>
-          <img src={rawImageUrl} alt="Raw image" width={600} />
+          <NextImage
+            src={inputImageData.url}
+            alt="Input image"
+            width={inputImageData.width}
+            height={inputImageData.height}
+          />
         </div>
       )}
     </>

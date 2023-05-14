@@ -23,7 +23,8 @@
       "@/*": ["./*"],
       "@wasm/*": ["./wasm/pkg/*"],
       "@components/*": ["./components/*"],
-      "@contexts/*": ["./contexts/*"]
+      "@contexts/*": ["./contexts/*"],
+      "@utils/*": ["./utils/*"]
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],

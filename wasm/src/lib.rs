@@ -1,7 +1,6 @@
-use std::{io::BufWriter, num::NonZeroU32};
+use std::num::NonZeroU32;
 
 use fast_image_resize as fr;
-use image::codecs::png::PngEncoder;
 use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen]
@@ -26,7 +25,7 @@ pub fn resize_image(raw_image_width: u32, raw_image_height: u32, buffer: &[u8]) 
 
     // for now, just spits the same image back again. TODO: Implement resizing!
 
-    return src_image.into_vec();
+    src_image.into_vec()
 }
 
 // #[wasm_bindgen]
