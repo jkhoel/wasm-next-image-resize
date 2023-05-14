@@ -12,13 +12,7 @@ Wasm-Pack is part of the [rust-wasm](https://github.com/rustwasm/team) group. Yo
 
 It then uses a small NextJS webapp to demo the WASM functions we have written.
 
-## Usage
-
-### Client-side
-This project shows two patterns for using WebAssembly modules client-side with Next;
-
-- Using a Context to share the WASM library to any children
-- Importing and initializing (`wasm.default()`) the library inside the same component
+This project uses Context to share the WASM library down the three
 
 ## Development: WASM
 
