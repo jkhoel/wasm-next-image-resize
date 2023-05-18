@@ -28,7 +28,7 @@ export default function UploadDialog() {
     if (inputImageFile) {
       ((async) => setImageDataObject(inputImageFile, setInputImageData))();
     }
-  }, [inputImageFile]);
+  }, [inputImageFile, setImageDataObject]);
 
   // Generate Resized images with the WASM Module if the input data changes
   useEffect(() => {
@@ -47,7 +47,7 @@ export default function UploadDialog() {
         ((async) => setImageDataObject(blob, setOutputImageData))();
       }
     }
-  }, [inputImageData]);
+  }, [inputImageData, ctx.wasm, setImageDataObject]);
 
   const handleFileSelect = (el: HTMLInputElement) => {
     if (el.files && el.files[0]) {
@@ -87,7 +87,7 @@ export default function UploadDialog() {
               outputImageData?.buffer.byteLength
             )})`}
           </p>
-          <img
+          <NextImage
             src={outputImageData.url}
             alt="Output image"
             width={outputImageData.width}

@@ -1,18 +1,24 @@
-# Demo of a NextJS project with a WASM Module for quickly resizing images clientside
+# Demo of a NextJS project with a WASM Module for quickly resizing images client-side
 
 Shows uploading and resizing an image client-side, but could just as well be ran on a node backend by changing build flags.
 The resizing WASM library is built in rust and can be imported by any process that can run JavaScript.
 
-> Note that while this project is public, it is still work in progress! For now, the WASM Module just returns an identical image. But it will resize soon
+> Note that while this project is public, it is still work in progress! For now, the WASM Module just returns an identical image. But it will resize soon (tm)
+
+TODO:
+
+- Accept more formats than just PNGs
+- Actually resize images
+- Link to example showing direct import of module in component, instead of via Context
+- Example of server-side WASM?
 
 ## Tooling
 
-This project uses [Wasm-Pack](https://github.com/rustwasm/wasm-pack) to build rust-generated WebAssembly packages with JavaScript interop.
-Wasm-Pack is part of the [rust-wasm](https://github.com/rustwasm/team) group. You can find more info by visiting that repo!
+This project uses [Wasm-Pack](https://github.com/rustwasm/wasm-pack) to build rust-generated WebAssembly packages with JavaScript interop from the NextJS project. Wasm-Pack is part of the [rust-wasm](https://github.com/rustwasm/team) group. Visit ther repo to learn more!
 
-It then uses a small NextJS webapp to demo the WASM functions we have written.
+It then uses a small [NextJS](https://nextjs.org/) web-app to demo the WASM functions we have written by exposing our WASM library via the React [Context](https://react.dev/reference/react/useContext). Using Context allows us to share one instance of our library between several components in the three, but we could also instantiate the module directly in our component as well.
 
-This project uses Context to share the WASM library down the three
+The project also uses [Tailwind](https://tailwindcss.com/) for styling.
 
 ## Development: WASM
 
